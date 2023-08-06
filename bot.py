@@ -1,42 +1,84 @@
+ADDRESSBOOK = {}
 
+def input_error(wrap):
+    def inner(
+        *args,
+    ):  # передаемо аргументи в інер -> то буде наш аргумент data в функціях на яких весить декоратор
+        try:
+            return wrap(*args)
+        except IndexError:
+            return "Give me name and phone please"
+        except ValueError:
+            return "Give me an information"
+        except KeyError:
+            return "Give me the name from phonebook"
 
-def add_handler(data):
-    name = data[0].title()
+    return inner
+
+@input_error
+def add_handler(data: list):
+    print(data)
+    name = data[0].upper()
     phone = data[1]
     ADDRESSBOOK[name] = phone
-    return args
+    return f"Contact {name} with {phone} was saved"
+
+@input_error
+def change_handler(*args): # зберігає в пам'яті новий номер телефону існуючого контакту
+    name = args[0].upper()
+    phone = args[1]
+    ADDRESSBOOK[name] = phone
+    return f"Contact {name} with {phone} was changed"
 
 
-def add_handler(*args):
-    return 'Goodbye'
+def exit_handler(*args):
+    return "Good bye!"
 
-def add_handler(*args):
-    return 'Hello'
 
-COMMANDS = [
-    add_handler: ['add', '+']
-    exit_handler: ["good bye", "close", "exit" ]
-    hello_handler: ['hello']
-]
+def hello_handler(*args):
+    return "How can I help you?"
 
-def command_parser(raw_str: str) -> list:
-    items = raw_str.split()
-    for key, value in COMMANDS.items()
-    if items[0].lower() in value:
-        return key, items[1:]
+@input_error
+def phone(name:str): #ADDRESSBOOK.keys() 
+    return ADDRESSBOOK.values()
+
+def show_all(*args): #виводить всі збереженні контакти з номерами телефонів у консоль
+    for k, v in ADDRESSBOOK.items():
+        return f"Contact {k} with {v}"
+    
+
+def command_parser(raw_str: str):
+    elements = raw_str.split()
+    for key, value in COMMANDS.items():
+        if elements[0].lower() in value:
+            return key, elements[1:]
+        elif (' ' in elements[0]) in value: # тут потрібна перевірка на подвійні команди типу "good bye" зі своїм ретерном 
+            return key, elements[1:]      
+    return 'Unknown command' # тут ще один return коли такої команди не існуе..продумати то щоб цикл не впав а сказав невідома команда
+        
+
+COMMANDS = {
+    add_handler: ["add", "+"],
+    exit_handler: ["good bye", "close", "exit"],
+    hello_handler: ["hello"],
+    change_handler: ["change"],
+    phone:["phone"],
+    show_all: ["show all"]
+}
 
 
 def main():
     while True:
-        user_input = input('>>>') # add name 0987009090
+        user_input = input(">>>")  # add name 0987009090
         if not user_input:
             continue
-        else:
-
-        func, data:list - command_parser(user_input)
-        print(func)
+        func,  data: list = command_parser(user_input)
         result = func(data)
         print(result)
+        if func == exit_handler:
+            break
+        print(ADDRESSBOOK)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
